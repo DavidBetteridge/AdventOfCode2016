@@ -1,3 +1,4 @@
+import numpy as np
 from typing import List
 
 
@@ -5,53 +6,53 @@ def read_file() -> List[str]:
   with open('Day01/data.txt') as f:
     return f.read().strip().split(", ")
 
+directions = [
+  np.array([1,0]),   #North
+  np.array([0,1]),   #East
+  np.array([-1,0]),  #South
+  np.array([0,-1]),  #West
+  ]
+
 commands = read_file()
 
-directions = ["N", "E", "S", "W"]
-direction = 0
-x = 0
-y = 0
 
-visited = set()
+def part1():
+  current_direction = 0 #North
+  position = np.array([0,0])      # X, Y
 
-for command in commands:
-  if command[0] == "R":
-    direction = (direction + 1) % 4
-  else:
-    direction = (direction - 1) % 4
+  for command in commands:
+    if command[0] == "R":
+      current_direction = (current_direction + 1) % 4
+    else:
+      current_direction = (current_direction - 1) % 4
 
-  distance = int(command[1:])
+    distance = int(command[1:])
+    position = position + (distance * directions[current_direction])
 
-  if direction == 0:
+  print(abs(position[0]) + abs(position[1]))
+
+
+def part2():
+  visited = set()
+  current_direction = 0 #North
+  position = np.array([0,0])      # X, Y
+
+  for command in commands:
+    if command[0] == "R":
+      current_direction = (current_direction + 1) % 4
+    else:
+      current_direction = (current_direction - 1) % 4
+
+    distance = int(command[1:])
+
     for _ in range(distance):
-      y += 1
-      if (x,y) in visited:
-        print(abs(x)+abs(y))
-      else:
-        visited.add((x,y))
+      position = position + directions[current_direction]
+      if (position[0], position[1]) in visited:
+        print(abs(position[0]) + abs(position[1]))
+        return
+      visited.add((position[0], position[1]))
 
-  elif direction == 2:
-    for _ in range(distance):
-      y -= 1
-      if (x,y) in visited:
-        print(abs(x)+abs(y))
-      else:
-        visited.add((x,y))
-
-  elif direction == 1:
-    for _ in range(distance):
-      x += 1
-      if (x,y) in visited:
-        print(abs(x)+abs(y))
-      else:
-        visited.add((x,y))
-
-  elif direction == 3:
-    for _ in range(distance):
-      x -= 1
-      if (x,y) in visited:
-        print(abs(x)+abs(y))
-      else:
-        visited.add((x,y))       
-
-
+  
+part1()
+part2()
+  
