@@ -13,8 +13,29 @@ def is_real_room(room_details: str) -> int:
   else:
     return 0
 
+def decrypt_room(room_details: str) -> int:
+  encrypted_name, _ = re.split("[0-9]+",room_details)
+  sector_id = int(room_details.split("[")[0].split("-")[-1])
+
+  result = ""
+  for c in encrypted_name:
+    if c == "-":
+      result += " "
+    else:
+      result += chr(((ord(c)-ord('a')+sector_id)%26)+ord('a'))
+  print(f"{result} - {sector_id}")
+
+
+
+
 with open('Day04/data.txt') as f:
   rooms = [line.strip() for line in f.readlines()]
 
 print(sum(is_real_room(room) for room in rooms))
+
+rooms  = [decrypt_room(room) for room in rooms if is_real_room(room) != 0]
+
+#northpole object storage  - 993
+
+
 
