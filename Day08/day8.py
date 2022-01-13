@@ -64,4 +64,6 @@ for r in range(NUMBER_OF_ROWS):
   for c in range(NUMBER_OF_COLUMNS):
     if grid[(c,r)]:
       result += 1
-print(result)  #10 33
+print(result) 
+
+print_grid(grid)
