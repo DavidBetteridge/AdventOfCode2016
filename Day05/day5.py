@@ -4,9 +4,11 @@ def part1():
   found = []
   current = 0
   door_id = "cxdnnyjw"
+  m = hashlib.md5()
   while len(found) < 8:
-    if hashlib.md5((f"{door_id}{current}").encode()).hexdigest().startswith("00000"):
-      found.append(hashlib.md5((f"{door_id}{current}").encode()).hexdigest()[5])
+    m.update((door_id+str(current)).encode('utf-8'))
+    if m.hexdigest().startswith("00000"):
+      found.append(m.hexdigest()[5])
     current+=1
   print("".join(found))
 
@@ -26,3 +28,5 @@ def part2():
     current+=1
 
   print("".join(found))    
+
+part1()
