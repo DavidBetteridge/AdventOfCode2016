@@ -65,3 +65,5 @@ while not no_progress:
 
       bot.values = []
       no_progress = False
+
+print(output[0] * output[1] * output[2])  #55637
