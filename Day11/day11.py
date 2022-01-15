@@ -51,7 +51,7 @@ G = nx.Graph()
 
 initial_state = {
   "e":  1,
-  1 : ["CG", "CM", "LG", "PG", "RG", "RM", "TG", "TM"],
+  1 : ["CG", "CM", "DG","DM","EG","EM", "LG", "PG", "RG", "RM", "TG", "TM"],
   2 : ["LM", "PM"],
   3 : [],
   4 : [],
@@ -62,8 +62,9 @@ target_state = {
   1 : [],
   2 : [],
   3 : [],
-  4 : ["CG", "CM", "LG", "LM", "PG", "PM", "RG", "RM", "TG", "TM"],
+  4 : ["CG", "CM", "DG","DM","EG","EM", "LG", "LM", "PG", "PM", "RG", "RM", "TG", "TM"],
 }
+
 
 
 to_process = []
@@ -103,15 +104,6 @@ while len(to_process) > 0:
         if current_floor > 1:
           move(state, current_state,
                 current_floor, current_floor-1, to_move, amended_floor)
-
-
-# assert json.dumps({"e": 1, "1": ["HM", "LM"], "2": ["HG"], "3": ["LG"], "4": []}) in processed
-# assert json.dumps({"e": 2, "1": ["LM"], "2": ["HG", "HM"], "3": ["LG"], "4": []}) in processed
-# assert json.dumps({"e": 3, "1": ["LM"], "2": [], "3": ["HG", "HM", "LG"], "4": []}) in processed
-# assert json.dumps({"e": 2, "1": ["LM"], "2": ["HM"], "3": ["HG", "LG"], "4": []}) in processed
-# assert json.dumps({"e": 1, "1": ["HM","LM"], "2": [], "3": ["HG", "LG"], "4": []}) in processed
-
-# assert json.dumps({"e": 4, "1": [], "2": [], "3": [], "4": ["HG", "HM", "LG", "LM"]}) in processed
 
 print(G)              
 route = (nx.dijkstra_path(G,
