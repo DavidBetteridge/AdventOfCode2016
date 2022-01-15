@@ -33,21 +33,38 @@ def possible_moves(floor_contents: List[str]):
 
 G = nx.Graph()
 
+# initial_state = {
+#   "e":  1,
+#   1 : ["HM", "LM"],
+#   2 : ["HG"],
+#   3 : ["LG"],
+#   4 : [],
+# }
+
+# target_state = {
+#   "e":  4,
+#   1 : [],
+#   2 : [],
+#   3 : [],
+#   4 : ["HG", "HM", "LG", "LM"],
+# }
+
 initial_state = {
   "e":  1,
-  1 : ["HM", "LM"],
-  2 : ["HG"],
-  3 : ["LG"],
+  1 : ["CG", "CM", "LG", "PG", "RG", "RM", "TG", "TM"],
+  2 : ["LM", "PM"],
+  3 : [],
   4 : [],
 }
 
 target_state = {
   "e":  4,
-  1 : ["HG", "HM", "LG", "LM"],
+  1 : [],
   2 : [],
   3 : [],
-  4 : [],
+  4 : ["CG", "CM", "LG", "LM", "PG", "PM", "RG", "RM", "TG", "TM"],
 }
+
 
 to_process = []
 processed = set()
@@ -64,7 +81,7 @@ def move(state, current_state, current_floor_number, move_to_floor_number, to_mo
       new_state[str(move_to_floor_number)] = new_floor
       new_state_json = json.dumps(new_state)
       G.add_edge(state, new_state_json)
-      if new_state_json not in processed:
+      if new_state_json not in processed and new_state_json not in to_process:
         to_process.append(new_state_json)
 
 while len(to_process) > 0:
@@ -88,9 +105,19 @@ while len(to_process) > 0:
                 current_floor, current_floor-1, to_move, amended_floor)
 
 
+# assert json.dumps({"e": 1, "1": ["HM", "LM"], "2": ["HG"], "3": ["LG"], "4": []}) in processed
+# assert json.dumps({"e": 2, "1": ["LM"], "2": ["HG", "HM"], "3": ["LG"], "4": []}) in processed
+# assert json.dumps({"e": 3, "1": ["LM"], "2": [], "3": ["HG", "HM", "LG"], "4": []}) in processed
+# assert json.dumps({"e": 2, "1": ["LM"], "2": ["HM"], "3": ["HG", "LG"], "4": []}) in processed
+# assert json.dumps({"e": 1, "1": ["HM","LM"], "2": [], "3": ["HG", "LG"], "4": []}) in processed
+
+# assert json.dumps({"e": 4, "1": [], "2": [], "3": [], "4": ["HG", "HM", "LG", "LM"]}) in processed
+
 print(G)              
-total, route = (nx.dijkstra_path(G,
+route = (nx.dijkstra_path(G,
           source=json.dumps(initial_state),
           target=json.dumps(target_state)))
-print(route)
-print(total)  #15358
+print(len(route)-1)  #47
+
+
+
