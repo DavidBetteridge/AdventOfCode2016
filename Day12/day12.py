@@ -1,6 +1,6 @@
 import dataclasses
 
-with open('Day12/data.txt') as f:
+with open('C:\Personal\AdventOfCode2016\Day12\data.txt') as f:
   instructions = [line.strip() for line in f.readlines()]
 
 
@@ -13,6 +13,7 @@ class Machine:
   ip = 0
 
 machine = Machine()
+machine.c = 1  #Part 2
 
 def set(register, value):
   setattr(machine, register, value)
@@ -42,4 +43,4 @@ while machine.ip < len(instructions):
     else:
       machine.ip += get(parts[2])
 
-print(machine.a)      
+print(machine.a, machine.b, machine.c, machine.d)      
