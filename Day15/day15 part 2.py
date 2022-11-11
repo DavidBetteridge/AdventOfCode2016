@@ -32,5 +32,9 @@ while True:
   if disk6 != 0:
     continue
 
+  disk7 = (0 + start_time + 6) % 11
+  if disk7 != 0:
+    continue
+
   print(start_time-1)
   break
