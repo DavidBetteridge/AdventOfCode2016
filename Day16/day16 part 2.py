@@ -18,13 +18,20 @@ def calculate_checksum(checksum: str) -> str:
     checksum = new_checksum
   return checksum
 
-target_length=272
-a = "10001001100000001"
 
-while len(a) < target_length:
-  b = reverse_and_invert(a)
-  a = f"{a}0{b}"
-a = a[:target_length]
-print(a)
-print(calculate_checksum(a))
+target_length=35651584
+seed = "10001001100000001"
+
+a_ = [seed]
+b_ = [reverse_and_invert(a_[0])]
+
+n = 0
+while len(a_[n]) < target_length:
+  n += 1
+  b_.append(a_[n-1] + "1" + b_[n-1])
+  a_.append(a_[n-1] + "0" + b_[n-1])
+target2 = a_[n][:target_length]
+print(len(target2))
+
+print(calculate_checksum(target2))
 
