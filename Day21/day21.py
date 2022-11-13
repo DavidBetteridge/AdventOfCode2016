@@ -1,3 +1,4 @@
+import re
 from typing import List
 
 def swap_by_position(password: List[str], x: int, y: int) -> List[str]:
@@ -33,20 +34,53 @@ def rotate_right_using_position(password: List[str], x: str) -> List[str]:
     pos+=1
   return rotate_right(password, pos + 1)
 
-
 def move_by_position(password: List[str], x: int, y: int) -> List[str]:
   c = password.pop(x)
   password.insert(y, c)
   return password
 
-as_list = list("abcde")
-as_list = swap_by_position(as_list, 4, 0)
-as_list = swap_letters(as_list, "d", "b")
-as_list = reverse_letters(as_list, 0, 4)
-as_list = rotate_left(as_list, 1)
-as_list = move_by_position(as_list, 1, 4)
-as_list = move_by_position(as_list, 3, 0)
-as_list = rotate_right_using_position(as_list, "b")
-as_list = rotate_right_using_position(as_list, "d")
+def read_file() -> List[str]:
+  with open("Day21/data.txt", "r") as f:
+    lines = f.readlines()
+    return lines
 
-print(as_list)
+
+
+commands = read_file()
+passcode = list("abcdefgh")
+
+for command in commands:
+  command = command.strip()
+
+  if (match := re.match('^swap position (?P<x>[0-9]) with position (?P<y>[0-9])$', command)):
+    values = match.groupdict()
+    passcode = swap_by_position(passcode, int(values["x"]), int(values["y"]))
+    
+  elif (match := re.match('^swap letter (?P<x>[a-z]) with letter (?P<y>[a-z])$', command)):
+    values = match.groupdict()
+    passcode = swap_letters(passcode, values["x"], values["y"])
+
+  elif (match := re.match('^rotate based on position of letter (?P<x>[a-z])$', command)):
+    values = match.groupdict()
+    passcode = rotate_right_using_position(passcode, values["x"])
+
+  elif (match := re.match('^rotate right (?P<x>[0-9]) step[s]?$', command)):
+    values = match.groupdict()
+    passcode = rotate_right(passcode, int(values["x"]))
+
+  elif (match := re.match('^rotate left (?P<x>[0-9]) step[s]?$', command)):
+    values = match.groupdict()
+    passcode = rotate_left(passcode, int(values["x"]))
+
+  elif (match := re.match('^reverse positions (?P<x>[0-9]) through (?P<y>[0-9])$', command)):
+    values = match.groupdict()
+    passcode = reverse_letters(passcode, int(values["x"]), int(values["y"]))
+
+  elif (match := re.match('^move position (?P<x>[0-9]) to position (?P<y>[0-9])$', command)):
+    values = match.groupdict()
+    passcode = move_by_position(passcode, int(values["x"]), int(values["y"]))
+
+  else:
+    raise Exception("Unknown command " + command)
+
+print("".join(passcode))
