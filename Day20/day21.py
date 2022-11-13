@@ -28,21 +28,9 @@ while len(bag) > 0:
 
 in_order = sorted(combined)
 
-n_allowed = max(0, in_order[0][0]-1)
-for i in range(len(in_order)-1):
-  a = in_order[i]
-  b = in_order[i+1]
-  gap = (b[0] - a[1]) - 1
-  n_allowed += gap
-
-last = 4294967295 - in_order[-1][1]
-n_allowed += last 
-
+n_allowed = max(0, in_order[0][0]-1)   # Before first range
+n_allowed += sum(in_order[i+1][0] - in_order[i][1] - 1
+                 for i in range(len(in_order)-1))  # Gaps between ranges
+n_allowed += 4294967295 - in_order[-1][1]  # After final range
 
 assert n_allowed == 146
-
-
-# pairs = list(zip([(in_order[0])]+in_order, in_order+[(in_order[-1])]))
-# print(len(pairs))
-
-
