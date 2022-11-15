@@ -68,7 +68,8 @@ while machine.ip < len(instructions):
     else:
       machine.ip += get(parts[2])
 
-print(machine.a, machine.b, machine.c, machine.d)
+  # print(machine.a, machine.b, machine.c, machine.d)
+print(machine.a)
 
 
 
