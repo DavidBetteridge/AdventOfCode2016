@@ -50,8 +50,7 @@ for perm in perms:
   for i in range(0, 6):
     f = perm[i]
     t = perm[i+1]
-    if f != t:
-      total += links[(f, t)]
+    total += links[(f, t)]
   if total < best:
     best = total
 
