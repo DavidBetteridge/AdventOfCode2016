@@ -46,6 +46,7 @@ best = 99999
 perms = permutations(["1", "2", "3", "4", "5", "6", "7"])
 for perm in perms:
   total = links[("0", perm[0])]
+  total += links[(perm[-1], "0")]  #part 2
   for i in range(0, 6):
     f = perm[i]
     t = perm[i+1]
