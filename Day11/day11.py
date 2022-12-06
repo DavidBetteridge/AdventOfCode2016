@@ -3,17 +3,17 @@ from itertools import combinations
 from typing import Iterable, List
 
 
-HYDROGEN = 0b01
-LITHIUM = 0b10
-NUMBER_OF_TYPES = 2
+# HYDROGEN = 0b01
+# LITHIUM = 0b10
+# NUMBER_OF_TYPES = 2
 
 
-# POLONIUM = 0b01
-# THULIUM = 0b10
-# PROMETHIUM = 0b100
-# RUTHENIUM = 0b1000
-# COBALT = 0b10000
-# NUMBER_OF_TYPES = 5
+POLONIUM = 0b01
+THULIUM = 0b10
+PROMETHIUM = 0b100
+RUTHENIUM = 0b1000
+COBALT = 0b10000
+NUMBER_OF_TYPES = 5
 
 def generator(radioisotope):
   return radioisotope << NUMBER_OF_TYPES
@@ -97,28 +97,28 @@ def display(state: int):
   print("")
 
 # Initial state
-# floor3 = 0
-# floor2 = 0
-# floor1 = microchip(POLONIUM) | microchip(PROMETHIUM)
-# floor0 = generator(POLONIUM) | generator(THULIUM) | microchip(THULIUM) | \
-#          generator(PROMETHIUM) | generator(RUTHENIUM) | microchip(RUTHENIUM) | \
-#          generator(COBALT) | microchip(COBALT)
-
 floor3 = 0
-floor2 = generator(LITHIUM)
-floor1 = generator (HYDROGEN)
-floor0 = microchip(HYDROGEN) | microchip(LITHIUM)
+floor2 = 0
+floor1 = microchip(POLONIUM) | microchip(PROMETHIUM)
+floor0 = generator(POLONIUM) | generator(THULIUM) | microchip(THULIUM) | \
+         generator(PROMETHIUM) | generator(RUTHENIUM) | microchip(RUTHENIUM) | \
+         generator(COBALT) | microchip(COBALT)
+
+# floor3 = 0
+# floor2 = generator(LITHIUM)
+# floor1 = generator (HYDROGEN)
+# floor0 = microchip(HYDROGEN) | microchip(LITHIUM)
 
 current_floor = 0
 initial_state = hash_state(current_floor, floor0, floor1, floor2, floor3)
 
-# all = generator(POLONIUM) | microchip(POLONIUM) | \
-#       generator(THULIUM) | microchip(THULIUM) | \
-#       generator(PROMETHIUM) | microchip(PROMETHIUM) | \
-#       generator(RUTHENIUM) | microchip(RUTHENIUM) | \
-#       generator(COBALT) | microchip(COBALT)
-all = generator(LITHIUM) | microchip(LITHIUM) | \
-      generator(HYDROGEN) | microchip(HYDROGEN) 
+all = generator(POLONIUM) | microchip(POLONIUM) | \
+      generator(THULIUM) | microchip(THULIUM) | \
+      generator(PROMETHIUM) | microchip(PROMETHIUM) | \
+      generator(RUTHENIUM) | microchip(RUTHENIUM) | \
+      generator(COBALT) | microchip(COBALT)
+# all = generator(LITHIUM) | microchip(LITHIUM) | \
+#       generator(HYDROGEN) | microchip(HYDROGEN) 
 floor3_complete = all << (2 + (2 * NUMBER_OF_TYPES * 3))
 
 def floor_is_valid(state:int, floor_number: int):
@@ -171,6 +171,7 @@ def possible_moves(state: int) -> List[int]:
   return valid_moves
 
 def solve(state, route, seen):
+  if len(route) > 100: return len(route)
   # Success!
   if (state & floor3_complete) == floor3_complete:
     return len(route)
