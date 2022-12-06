@@ -33,13 +33,6 @@ def set_floor_bits(state, floor_no):
 def bit_offset(floor_no):
   return (2 + (2 * NUMBER_OF_TYPES * floor_no))
 
-def set_depth_bits(state, depth):
-  # Depth cannot decrease,  and so cannot require less bits
-  return state | (depth << bit_offset(floor_no=4))
-
-def get_depth_bits(state):
-  return state >> bit_offset(floor_no=4)
-
 def test_item_bits(state, floor_no, offsets: Iterable[int]):
   for offset in offsets:
     if not test_bit(state, bit_offset(floor_no) + offset):
@@ -56,13 +49,12 @@ def set_item_bits(state, floor_no, offsets: Iterable[int]):
     state = set_bit(state, bit_offset(floor_no) + offset)
   return state
 
-def hash_state(current_floor: int, floor0: int, floor1: int, floor2: int, floor3: int, depth: int):
+def hash_state(current_floor: int, floor0: int, floor1: int, floor2: int, floor3: int):
   return current_floor \
           | (floor0 << 2) \
           | (floor1 << 2 + (2 * NUMBER_OF_TYPES)) \
           | (floor2 << 2 + (2 * NUMBER_OF_TYPES * 2)) \
-          | (floor3 << 2 + (2 * NUMBER_OF_TYPES * 3)) \
-          | (depth << 2 + (2 * NUMBER_OF_TYPES * 4)) \
+          | (floor3 << 2 + (2 * NUMBER_OF_TYPES * 3))
 
 # Initial state
 floor3 = 0
@@ -72,7 +64,7 @@ floor0 = generator(POLONIUM) | generator(THULIUM) | microchip(THULIUM) | \
          generator(PROMETHIUM) | generator(RUTHENIUM) | microchip(RUTHENIUM) | \
          generator(COBALT) | microchip(COBALT)
 current_floor = 0
-initial_state = hash_state(current_floor, floor0, floor1, floor2, floor3, depth=0)
+initial_state = hash_state(current_floor, floor0, floor1, floor2, floor3)
 
 all = generator(POLONIUM) | microchip(POLONIUM) | \
       generator(THULIUM) | microchip(THULIUM) | \
@@ -126,18 +118,17 @@ def possible_moves(state: int) -> List[int]:
 
 
 best_depth = 99999
-to_process = set([initial_state])
+to_process = {initial_state:0}
 processed = set()
 while len(to_process) > 0:
-  next_state = to_process.pop()
+  next_state, depth = to_process.popitem()
   if next_state not in processed:
     processed.add(next_state)
     for move in possible_moves(next_state):
-      current_depth = get_depth_bits(move)
       if (move & floor3_complete) == floor3_complete:
-        best_depth = min(best_depth, current_depth)
+        best_depth = min(best_depth, depth+1)
       elif move not in processed and move not in to_process:
-        to_process.add(set_depth_bits(move, current_depth+1))
+        to_process[move] = depth+1
 print(best_depth)
 
 
