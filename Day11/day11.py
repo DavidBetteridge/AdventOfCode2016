@@ -170,20 +170,18 @@ def possible_moves(state: int) -> List[int]:
 
   return valid_moves
 
+def solve(state, route, seen):
+  # Success!
+  if (state & floor3_complete) == floor3_complete:
+    return len(route)
 
-best_depth = 99999
-to_process = {initial_state:0}
-processed = set()
-while len(to_process) > 0:
-  next_state, depth = to_process.popitem()
-  if next_state not in processed:
-    processed.add(next_state)
-    for move in possible_moves(next_state):
-      if (move & floor3_complete) == floor3_complete:
-        best_depth = min(best_depth, depth+1)
-      else:
-        previous_depth = to_process.get(move, 99999)
-        if move not in processed and depth+1 < previous_depth:
-          to_process[move] = depth+1
+  best_route = 99999
+  for next_state in possible_moves(state):
+    if next_state not in route:
+      depth = seen.get(next_state, 9999)
+      if len(route) < depth:
+        seen[next_state] = len(route)
+        best_route = min(best_route, solve(next_state, route + [state], seen))
+  return best_route
 
-print(best_depth)
+print(solve(initial_state, [], dict()))
