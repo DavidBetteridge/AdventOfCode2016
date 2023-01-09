@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from collections import deque
 from typing import Deque, List, Set, Tuple
 from functools import lru_cache
+import time
 
 MICROCHIP = 0
 GENERATOR = 1
@@ -67,15 +68,12 @@ def find_available_moves(state: State) -> List[State]:
   return available_moves
 
 def state_to_seen_cache(state: State) -> Tuple[int, ...]:
-  floors = [state.e]
-  for floor in range(1,5):
-    floor_items = []
-    for (m,g) in state.items:
-      if m == floor:
-        floor_items.append(g)
-    floors = floors + sorted(floor_items) + [-1]
-  return tuple(floors)
+  floors = [g+(16*floor) for floor in range(1,5)
+                         for (m,g) in state.items if m == floor]
+  floors.append(state.e)
+  return tuple(sorted(floors))
 
+st = time.time()
 
 queue: Deque[State] = deque()
 seen: Set[SeenState] = set()
@@ -98,3 +96,6 @@ while not solution_found:
         print(available_move.moves)
       else:
         queue.append(available_move)
+
+elapsed_time = time.time() - st
+print('Time taken:', elapsed_time, 'seconds')
