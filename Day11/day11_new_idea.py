@@ -15,9 +15,10 @@ class State:
 
 SeenState = Tuple[int, ...]
 
+initial_state = State(0, 1, [(1,2), (1,3)])  #11
+#initial_state = State(0, 1, [(1,1), (1,1), (1,1), (2,1), (2,1)])  #47
+initial_state = State(0, 1, [(1,1), (1,1), (1,1), (1,1), (1,1), (2,1), (2,1)])  #71s
 
-def is_solution(state: State) -> bool:
-  return all(m==4 and h==4 for m,h in state.items)
 
 @lru_cache(maxsize=None)
 def floor_is_valid(floor: int, items: Tuple[Tuple[int,int],...]) -> bool:
@@ -28,8 +29,7 @@ def floor_is_valid(floor: int, items: Tuple[Tuple[int,int],...]) -> bool:
       return False
   return True
 
-def find_available_moves(state: State, seen: set):
-  possible_moves: List[List[Tuple[int,int]]] = []
+def find_available_moves(state: State, seen: set, queue) -> bool:
   
   # Just microchips
   possible_moves = [ [(i,MICROCHIP)] for i in range(len(state.items)) if state.items[i][MICROCHIP] == state.e]
@@ -37,7 +37,6 @@ def find_available_moves(state: State, seen: set):
   # Just generators
   generators = [ [(i,GENERATOR)] for i in range(len(state.items)) if state.items[i][GENERATOR] == state.e]
   possible_moves += generators
-
   
   # All pairs of moves.
   combinations = []
@@ -64,9 +63,15 @@ def find_available_moves(state: State, seen: set):
           cachable = state_to_seen_cache(available_move)
           if not cachable in seen:
             seen.add(cachable)
-            yield available_move
+            queue.append(available_move)
+            if is_solution(available_move):
+              print(available_move.moves)
+              return True
 
-  return available_moves
+  return False
+
+def is_solution(state: State) -> bool:
+  return all(m==4 and h==4 for m,h in state.items)
 
 def state_to_seen_cache(state: State) -> Tuple[int, ...]:
   floors = [g+(16*floor) for floor in range(1,5)
@@ -78,22 +83,12 @@ st = time.time()
 
 queue: Deque[State] = deque()
 seen: Set[SeenState] = set()
-
-initial_state = State(0, 1, [(1,2), (1,3)])  #11
-#initial_state = State(0, 1, [(1,1), (1,1), (1,1), (2,1), (2,1)])  #47
-initial_state = State(0, 1, [(1,1), (1,1), (1,1), (1,1), (1,1), (2,1), (2,1)])  #71
 queue.append(initial_state)
 
 solution_found = False
 while not solution_found:
   next = queue.popleft()
-  available_moves = find_available_moves(next, seen)
-  for available_move in available_moves:
-    if is_solution(available_move):
-      solution_found = True
-      print(available_move.moves)
-    else:
-      queue.append(available_move)
+  solution_found = find_available_moves(next, seen, queue)
 
 elapsed_time = time.time() - st
 print('Time taken:', elapsed_time, 'seconds')
