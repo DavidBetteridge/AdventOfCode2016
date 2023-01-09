@@ -28,17 +28,14 @@ def floor_is_valid(floor: int, items: Tuple[Tuple[int,int],...]) -> bool:
       return False
   return True
 
-def find_available_moves(state: State) -> List[State]:
-  n_items = len(state.items)    # 0.... n-1
+def find_available_moves(state: State, seen: set):
   possible_moves: List[List[Tuple[int,int]]] = []
-  available_moves = []
   
   # Just microchips
-  microchips = [ [(i,MICROCHIP)] for i in range(n_items) if state.items[i][MICROCHIP] == state.e]
-  possible_moves += microchips
+  possible_moves = [ [(i,MICROCHIP)] for i in range(len(state.items)) if state.items[i][MICROCHIP] == state.e]
 
   # Just generators
-  generators = [ [(i,GENERATOR)] for i in range(n_items) if state.items[i][GENERATOR] == state.e]
+  generators = [ [(i,GENERATOR)] for i in range(len(state.items)) if state.items[i][GENERATOR] == state.e]
   possible_moves += generators
 
   
@@ -49,7 +46,6 @@ def find_available_moves(state: State) -> List[State]:
       if pair1[0] < pair2[0]:
         combinations.append([pair1[0],pair2[0]])
   possible_moves += combinations
-
 
   for dir in [-1, 1]:
     new_floor = state.e + dir
@@ -62,8 +58,13 @@ def find_available_moves(state: State) -> List[State]:
           else:
             items[item_type] = (items[item_type][MICROCHIP], new_floor)
 
-        if floor_is_valid(state.e, tuple(items)) and floor_is_valid(new_floor, tuple(items)):
-          available_moves.append(State(state.moves+1, new_floor, items))
+        items_t = tuple(items)
+        if floor_is_valid(state.e, items_t) and floor_is_valid(new_floor, items_t):
+          available_move = State(state.moves+1, new_floor, items)
+          cachable = state_to_seen_cache(available_move)
+          if not cachable in seen:
+            seen.add(cachable)
+            yield available_move
 
   return available_moves
 
@@ -86,16 +87,13 @@ queue.append(initial_state)
 solution_found = False
 while not solution_found:
   next = queue.popleft()
-  available_moves = find_available_moves(next)
+  available_moves = find_available_moves(next, seen)
   for available_move in available_moves:
-    cachable = state_to_seen_cache(available_move)
-    if not cachable in seen:
-      seen.add(cachable)
-      if is_solution(available_move):
-        solution_found = True
-        print(available_move.moves)
-      else:
-        queue.append(available_move)
+    if is_solution(available_move):
+      solution_found = True
+      print(available_move.moves)
+    else:
+      queue.append(available_move)
 
 elapsed_time = time.time() - st
 print('Time taken:', elapsed_time, 'seconds')
